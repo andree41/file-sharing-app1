@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycle Bin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+        .back-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .file-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .file-item {
+            background-color: white;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .file-info {
+            flex-grow: 1;
+        }
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .file-actions button {
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .restore-btn {
+            background-color: #2ecc71;
+        }
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+        .flash-messages {
+            list-style-type: none;
+            padding: 0;
+        }
+        .flash-messages li {
+            background-color: #f39c12;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .empty-message {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .empty-recycle-bin {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .empty-recycle-bin button {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .empty-recycle-bin button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Recycle Bin</h1>
+        <a href="{{ url_for('index') }}" class="back-btn">Back to Files</a>
+    </div>
+
+    {% if files %}
+        <ul class="file-list">
+        {% for file in files %}
+            <li class="file-item">
+                <div class="file-info">
+                    <strong>{{ file.filename }}</strong> (Version: {{ file.version }})
+                </div>
+                <div class="file-actions">
+                    <form action="{{ url_for('restore_file', file_id=file.id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="restore-btn">Restore</button>
+                    </form>
+                    <form action="{{ url_for('permanent_delete', file_id=file.id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to permanently delete this file?');">
+                        <button type="submit" class="delete-btn">Permanently Delete</button>
+                    </form>
+                </div>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty-message">The recycle bin is empty.</p>
+    {% endif %}
+
+    <div class="empty-recycle-bin">
+        <form action="{{ url_for('empty_recycle_bin') }}" method="post" onsubmit="return confirm('Are you sure you want to permanently delete all files in the recycle bin?');">
+            <button type="submit">Empty Recycle Bin</button>
+        </form>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flash-messages">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

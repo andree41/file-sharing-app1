@@ -1,0 +1,2 @@
+Step 4: Front End
+Currently, the project is designed for the command-line interface (CLI). If you want to add a simple front-end interface, you can create a web interface using Python's Flask or a graphical user interface (GUI) using a library like tkinter.
